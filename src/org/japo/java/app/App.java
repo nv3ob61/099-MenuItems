@@ -39,20 +39,22 @@ public final class App {
     ListaItems lista = new ListaItems();
     boolean isOk;
     boolean ok;
-
     //
     char opcion;
     String nombre;
     double precio;
 
-    //Añadimos items de prueba
+    //Añadimos items de prueba, varios decimales. 
+    //Actual DecimalFormat en la validación.
     Item iTest1 = new Item();
-    Item iTest2 = new Item("Cebollas", 4.40214);
-
+    Item iTest2 = new Item("Cebollas", 4.40914);
+    Item iTest3 = new Item("Naranjas", 9.999);
+    //Añadimos los 3 artículos a la lista mediante el método addItem(Item);
     lista.addItem(iTest1);
     lista.addItem(iTest2);
+    lista.addItem(iTest3);
 
-    //Empieza menú principal
+//Empieza menú principal. FALTA VALIDAR NOMBRESSS!
     do {
       muestraBanner();
       opcion = UtilesEntrada.leerCaracter(MSG_OP, MSG_ERR);
@@ -62,12 +64,11 @@ public final class App {
 //A - Añadir articulo
         case 'a':
           isOk = false;
-          System.out.println("AÑADIR ARTÍCULOS");
-          System.out.println("-----------------");
+          addItemsBanner();
           nombre = UtilesEntrada.leerTexto(MSG_ART);
           do {
             precio = UtilesEntrada.leerReal(MSG_PRECIO, MSG_ERR);
-            isOk = true;
+            isOk = validaPrecio(precio);
           } while (!isOk);
 
           item = new Item(nombre, precio);
@@ -81,9 +82,7 @@ public final class App {
 //B - Baja artículo
         case 'b':
           isOk = false;
-          System.out.println("BAJA DE ARTÍCULOS");
-          System.out.println("-----------------");
-
+          delItemsBanner();
           nombre = UtilesEntrada.leerTexto(MSG_ART);
           item = lista.buscaItem(nombre);
           if (item != null) {
@@ -96,8 +95,7 @@ public final class App {
 //C - Consulta articulo        
         case 'c':
           isOk = false;
-          System.out.println("CONSULTA DE ARTÍCULOS");
-          System.out.println("---------------------");
+          consultaBanner();
           nombre = UtilesEntrada.leerTexto(MSG_ART);
           //Buscar el String
           item = lista.buscaItem(nombre);
@@ -110,12 +108,10 @@ public final class App {
 //M - Modificación atributis
         case 'm':
           isOk = false;
-          System.out.println("CAMBIO DE ATRIBUTOS");
-          System.out.println("-------------------");
-          System.out.println("OJO: Solo cambia el precio!");
+          cambiosBanner();
           do {
             //validamos nombre
-            nombre = UtilesEntrada.leerTexto(MSG_OP);
+            nombre = UtilesEntrada.leerTexto(MSG_ART);
             if (!UtilesValidacion.validar(nombre, Item.ER_NOMBRE)) {
               System.out.println("ERROR: Formato de artículo incorrecto");
             } else {
@@ -132,8 +128,8 @@ public final class App {
             isOk = false;
             do {
               System.out.printf("El precio actual es %.2f €%n", item.getPrecio());
-              precio = UtilesEntrada.leerEntero(MSG_NEW_PRICE, MSG_ERR);
-              isOk = true;
+              precio = UtilesEntrada.leerReal(MSG_NEW_PRICE, MSG_ERR);
+              isOk = validaPrecio(precio);
             } while (!isOk);
             item.setPrecio(precio);
             System.out.println("");
@@ -143,7 +139,7 @@ public final class App {
             System.out.println("");
             System.out.println("ERROR: Operación no completada");
           }
-
+          break;
 //L - Listado    (Display de todos los Items)     
         case 'l':
           if (lista.numItems() > 0) {
@@ -176,6 +172,36 @@ public final class App {
     System.out.println();
     System.out.println("---");
     System.out.println("S.- Salir");
+  }
+
+  public boolean validaPrecio(double precio) {
+    boolean isOk;
+    isOk = UtilesValidacion.validarPrecio(Double.toString(precio));
+    if (!isOk) {
+      System.out.printf("%nPrecio introducido incorrecto.%n%n");
+    }
+    return isOk;
+  }
+
+  public void addItemsBanner() {
+    System.out.println("AÑADIR ARTÍCULOS");
+    System.out.println("-----------------");
+  }
+
+  public void delItemsBanner() {
+    System.out.println("BAJA DE ARTÍCULOS");
+    System.out.println("-----------------");
+  }
+
+  public void consultaBanner() {
+    System.out.println("CONSULTA DE ARTÍCULOS");
+    System.out.println("---------------------");
+  }
+
+  public void cambiosBanner() {
+    System.out.println("CAMBIO DE ATRIBUTOS");
+    System.out.println("-------------------");
+    System.out.println("OJO: Solo cambia el precio!");
   }
 
 }

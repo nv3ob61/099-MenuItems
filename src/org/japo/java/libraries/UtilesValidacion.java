@@ -17,6 +17,7 @@
  */
 package org.japo.java.libraries;
 
+import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.japo.java.entities.Item;
@@ -48,9 +49,11 @@ public class UtilesValidacion {
   }
 
   public static final boolean validarPrecio(String precio) {
-    StringBuilder sb = new StringBuilder("##.##");
-    sb.append(precio);
-
     return precio.matches(Item.ER_PRECIO);
+  }
+  
+  public static final String formatPrecio(double precio){
+    DecimalFormat df = new DecimalFormat("#.##");
+    return df.format(precio);
   }
 }

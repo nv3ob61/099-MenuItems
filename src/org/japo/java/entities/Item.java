@@ -24,19 +24,19 @@ import org.japo.java.libraries.UtilesValidacion;
  * @author Jonsui
  */
 public class Item {
-  
+
   public static final String DEF_NOMBRE = "Patatas";
   //pongo DEF_PRECIO a -1, valor indudable que no corresponde a 0 que sería
   //en el caso que vendiéramos algo como regalarlo.
   public static final double DEF_PRECIO = -1.00;
   public static final String ER_NOMBRE = ".*\\w.*";
-  public static final String ER_PRECIO = "\\d[\\d.]*";
-  
+  public static final String ER_PRECIO = "^[0-9]+([\\.,][0-9]{1,2})?$";
+
   private final int id;
   private String nombre;
   private double precio;
   private static int increment = 1;
-  
+
   public Item() {
     id = increment;
     nombre = DEF_NOMBRE;
@@ -52,34 +52,34 @@ public class Item {
   public Item(String nombre, double precio) {
     this.id = increment;
     this.nombre = nombre;
-    if (UtilesValidacion.validarPrecio(Double.toString(precio))) {
+    if (UtilesValidacion.validarPrecio(UtilesValidacion.formatPrecio(precio))) {
       this.precio = precio;
     } else {
       this.precio = DEF_PRECIO;
     }
     increment++;
   }
-  
+
   public int getId() {
     return id;
   }
-  
+
   public String getNombre() {
     return nombre;
   }
-  
+
   public double getPrecio() {
     return precio;
   }
-  
+
   public void setNombre(String nombre) {
     this.nombre = nombre;
   }
-  
+
   public void setPrecio(double precio) {
     this.precio = precio;
   }
-  
+
   @Override
   public String toString() {
     return String.format("INFO DEL ITEM%n"
@@ -89,9 +89,9 @@ public class Item {
             + "PRECIO .....: %.2f €%n"
             + "---", id, nombre, precio);
   }
-  
+
   public void muestraInfoItem() {
     System.out.println(toString());
   }
-  
+
 }

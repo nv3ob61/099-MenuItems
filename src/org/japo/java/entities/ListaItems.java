@@ -32,7 +32,7 @@ public class ListaItems {
     lista = new ArrayList<>();
   }
 
-  //Método para añadir un vehículo
+  //Método para añadir un artículo
   public boolean addItem(Item i) {
     boolean isOk = false;
     if (i != null) {
@@ -41,7 +41,7 @@ public class ListaItems {
     return isOk;
   }
 
-  //método para borrar un vehículo
+  //método para borrar un artículo
   public boolean delItem(Item i) {
     boolean del = false;
     if (i != null) {
@@ -50,7 +50,7 @@ public class ListaItems {
     return del;
   }
 
-    //Método que busca vehículo por la matrícula.
+    //Método que busca artículo por su nombre (solo el primero)
   public Item buscaItem(String nombre) {
     Item i;
     Item enc = null;
