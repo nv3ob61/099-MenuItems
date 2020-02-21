@@ -29,10 +29,8 @@ public class Item {
   //pongo DEF_PRECIO a -1, valor indudable que no corresponde a 0 que sería
   //en el caso que vendiéramos algo como regalarlo.
   public static final double DEF_PRECIO = -1.00;
-  public static final String ER_NOMBRE = ".*\\w.*";
-  public static final String ER_PRECIO = "^[0-9]+([\\.,][0-9]{1,2})?$";
 
-  private final int id;
+  private int id;
   private String nombre;
   private double precio;
   private static int increment = 1;
@@ -51,8 +49,12 @@ public class Item {
   //modificar desde fuera ninguna ID de ningún artículo (aparentemente)
   public Item(String nombre, double precio) {
     this.id = increment;
-    this.nombre = nombre;
-    if (UtilesValidacion.validarPrecio(UtilesValidacion.formatPrecio(precio))) {
+    if (UtilesValidacion.validarNombre(nombre)) {
+      this.nombre = nombre;
+    } else {
+      this.nombre = DEF_NOMBRE;
+    }
+    if (UtilesValidacion.precioOk(precio)) {
       this.precio = precio;
     } else {
       this.precio = DEF_PRECIO;
@@ -73,10 +75,21 @@ public class Item {
   }
 
   public void setNombre(String nombre) {
-    this.nombre = nombre;
+    if (UtilesValidacion.validarNombre(nombre)) {
+      this.nombre = nombre;
+    }
+  }
+
+  public void setId(int id) {
+    if (UtilesValidacion.validaId(String.valueOf(id))) {
+      this.id = id;
+    }
   }
 
   public void setPrecio(double precio) {
+//    if (UtilesValidacion.validarPrecio(String.valueOf(precio))) {
+//      this.precio = Double.parseDouble(UtilesValidacion.formatPrecio(precio));
+//    }
     this.precio = precio;
   }
 

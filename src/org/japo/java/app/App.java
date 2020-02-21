@@ -31,8 +31,9 @@ public final class App {
   public static final String MSG_OP = "Introduzca una opción: ";
   public static final String MSG_ERR = "ERROR: Valor introducido incorrecto";
   public static final String MSG_ART = "Introduzca nombre artículo: ";
+  public static final String MSG_ID = "Introduzca ID del artículo: ";
   public static final String MSG_PRECIO = "Introduzca precio artículo: ";
-  public static final String MSG_NEW_PRICE = "Introduzca el precio a modificar: ";
+  public static final String MSG_NEW_PRICE = "Introduzca el nuevo precio: ";
 
   public final void launchApp() {
     Item item;
@@ -42,17 +43,20 @@ public final class App {
     //
     char opcion;
     String nombre;
+    String id;
     double precio;
 
     //Añadimos items de prueba, varios decimales. 
     //Actual DecimalFormat en la validación.
     Item iTest1 = new Item();
-    Item iTest2 = new Item("Cebollas", 4.40914);
-    Item iTest3 = new Item("Naranjas", 9.999);
+    Item iTest2 = new Item("Cebollas", 4.40);
+    Item iTest3 = new Item("Naranjas", 9.99);
+    Item iTest4 = new Item("Arbóndigas", 12.33);
     //Añadimos los 3 artículos a la lista mediante el método addItem(Item);
     lista.addItem(iTest1);
     lista.addItem(iTest2);
     lista.addItem(iTest3);
+    lista.addItem(iTest4);
 
 //Empieza menú principal. FALTA VALIDAR NOMBRESSS!
     do {
@@ -66,30 +70,43 @@ public final class App {
           isOk = false;
           addItemsBanner();
           nombre = UtilesEntrada.leerTexto(MSG_ART);
-          do {
-            precio = UtilesEntrada.leerReal(MSG_PRECIO, MSG_ERR);
-            isOk = validaPrecio(precio);
-          } while (!isOk);
+          if (UtilesValidacion.nombreOk(nombre)) {
+            do {
+              System.out.println("---");
+              precio = UtilesEntrada.leerReal(MSG_PRECIO, MSG_ERR);
+              isOk = UtilesValidacion.precioOk(precio);
+            } while (!isOk);
 
-          item = new Item(nombre, precio);
-          ok = lista.addItem(item);
-          if (ok) {
-            System.out.printf("%nArtículo añadido%n");
+            item = new Item(nombre, precio);
+            ok = lista.addItem(item);
+            if (ok) {
+              System.out.printf("%nArtículo añadido%n");
+              System.out.println("---");
+            } else {
+              System.out.printf("%nERROR: Operación NO completada.%n");
+              System.out.println("---");
+            }
           } else {
-            System.out.printf("%nERROR: Operación NO completada.%n");
+            //si falla sale el mensajde desde UtilesValidación....
+//            System.out.printf("%nERROR: Dato introducido incorrecto.%n");
           }
           break;
-//B - Baja artículo
+//B - Baja artículo por ID
         case 'b':
           isOk = false;
           delItemsBanner();
-          nombre = UtilesEntrada.leerTexto(MSG_ART);
-          item = lista.buscaItem(nombre);
-          if (item != null) {
-            lista.delItem(item);
-            System.out.printf("%nITEM dado de baja correctamente%n%n");
+          id = UtilesEntrada.leerTexto(MSG_ID);
+          if (UtilesValidacion.validaId(id)) {
+            item = lista.buscaItemId(id);
+            if (item != null) {
+              lista.delItem(item);
+              System.out.printf("%nITEM dado de baja correctamente%n%n");
+            } else {
+              System.out.printf("%nERROR: Artículo no encontrado%n%n");
+            }
           } else {
-            System.out.printf("%nERROR: Artículo no encontrado%n");
+            System.out.println("MENSAJE DE TEST: SI FALLA LA INTRO "
+                    + "DEL MENU B, SALE DIRECTAMENTE DE MOMENTO....");
           }
           break;
 //C - Consulta articulo        
@@ -97,22 +114,42 @@ public final class App {
           isOk = false;
           consultaBanner();
           nombre = UtilesEntrada.leerTexto(MSG_ART);
-          //Buscar el String
-          item = lista.buscaItem(nombre);
-          if (item != null) {
-            item.muestraInfoItem();
-          } else {
-            System.out.printf("%nElemento no encontrado en la lista.%n%n");
+          if (UtilesValidacion.nombreOk(nombre)) {
+            //Buscar el String
+            item = lista.buscaItem(nombre);
+            if (item != null) {
+              item.muestraInfoItem();
+            } else {
+              System.out.printf("%nElemento no encontrado en la lista.%n%n");
+            }
           }
           break;
-//M - Modificación atributis
+//D - Consulta articulo por ID      
+        case 'd':
+          isOk = false;
+          consultaIdBanner();
+          id = UtilesEntrada.leerTexto(MSG_ID);
+          if (UtilesValidacion.validaId(id)) {
+            //Buscar el String
+            item = lista.buscaItemId(id);
+            if (item != null) {
+              item.muestraInfoItem();
+            } else {
+              System.out.printf("%nElemento no encontrado en la lista.%n%n");
+            }
+          } else {
+            System.out.println("MENSAJE DE TEST: SI FALLA LA INTRO "
+                    + "DEL MENU D, SALE DIRECTAMENTE DE MOMENTO....");
+          }
+          break;
+//M - Modificación atributis por nombre, primera ocurrencia.
         case 'm':
           isOk = false;
           cambiosBanner();
           do {
             //validamos nombre
             nombre = UtilesEntrada.leerTexto(MSG_ART);
-            if (!UtilesValidacion.validar(nombre, Item.ER_NOMBRE)) {
+            if (!UtilesValidacion.validar(nombre, UtilesValidacion.ER_NOMBRE)) {
               System.out.println("ERROR: Formato de artículo incorrecto");
             } else {
               isOk = true;
@@ -129,18 +166,42 @@ public final class App {
             do {
               System.out.printf("El precio actual es %.2f €%n", item.getPrecio());
               precio = UtilesEntrada.leerReal(MSG_NEW_PRICE, MSG_ERR);
-              isOk = validaPrecio(precio);
+              isOk = UtilesValidacion.precioOk(precio);
             } while (!isOk);
             item.setPrecio(precio);
-            System.out.println("");
-            System.out.println("Atributo PRECIO cambiado con éxito");
-            System.out.println("");
+            System.out.printf("%nAtributo PRECIO cambiado con éxito%n%n");
           } else {
-            System.out.println("");
-            System.out.println("ERROR: Operación no completada");
+            System.out.printf("%nERROR: Operación no completada%n%n");
+          }
+          break;
+//N - Modificación atributis por id.
+        case 'n':
+          isOk = false;
+          cambiosIdBanner();
+          id = UtilesEntrada.leerTexto(MSG_ID);
+          if (UtilesValidacion.validaId(id)) {
+            item = lista.buscaItemId(id);
+
+            if (item != null) {
+              //reset isOk
+              do {
+                System.out.println();
+                item.muestraInfoItem();
+                precio = UtilesEntrada.leerReal(MSG_NEW_PRICE, MSG_ERR);
+                isOk = UtilesValidacion.precioOk(precio);
+              } while (!isOk);
+              item.setPrecio(precio);
+              System.out.printf("%nAtributo PRECIO cambiado con éxito%n%n");
+            } else {
+              System.out.printf("%nERROR: Item no está en la lista%n%n");
+            }
+          }
+          else {
+            System.out.println("ERROR: Formato introducido erróneo.");
           }
           break;
 //L - Listado    (Display de todos los Items)     
+
         case 'l':
           if (lista.numItems() > 0) {
             lista.mostrarItems();
@@ -159,28 +220,20 @@ public final class App {
   }
 
   public void muestraBanner() {
-    System.out.println();
     System.out.println("SISTEMA DE ARTÍCULOS");
     System.out.println();
     System.out.println(" Menú principal");
     System.out.println("----------------");
     System.out.println("A.- Alta artículos");
-    System.out.println("B.- Baja artículos");
-    System.out.println("C.- Consulta artículos");
-    System.out.println("M.- Modificación artículos");
+    System.out.println("B.- Baja artículos (ID)");
+    System.out.println("C.- Consulta primer artículo por nombre");
+    System.out.println("D.- Consulta artículo por ID");
+    System.out.println("M.- Modificación artículos por nombre");
+    System.out.println("N.- Modificación artículos por ID");
     System.out.println("L.- Listado");
     System.out.println();
     System.out.println("---");
     System.out.println("S.- Salir");
-  }
-
-  public boolean validaPrecio(double precio) {
-    boolean isOk;
-    isOk = UtilesValidacion.validarPrecio(Double.toString(precio));
-    if (!isOk) {
-      System.out.printf("%nPrecio introducido incorrecto.%n%n");
-    }
-    return isOk;
   }
 
   public void addItemsBanner() {
@@ -194,14 +247,24 @@ public final class App {
   }
 
   public void consultaBanner() {
-    System.out.println("CONSULTA DE ARTÍCULOS");
-    System.out.println("---------------------");
+    System.out.println("CONSULTA DE ARTÍCULOS POR NOMBRE");
+    System.out.println("--------------------------------");
+  }
+
+  public void consultaIdBanner() {
+    System.out.println("CONSULTA DE ARTÍCULOS POR ID");
+    System.out.println("----------------------------");
   }
 
   public void cambiosBanner() {
-    System.out.println("CAMBIO DE ATRIBUTOS");
-    System.out.println("-------------------");
+    System.out.println("CAMBIO DE ATRIBUTOS POR NOMBRE");
+    System.out.println("------------------------------");
     System.out.println("OJO: Solo cambia el precio!");
   }
 
+  public void cambiosIdBanner() {
+    System.out.println("CAMBIO DE ATRIBUTOS POR ID");
+    System.out.println("--------------------------");
+    System.out.println("OJO: Solo cambia el precio!");
+  }
 }

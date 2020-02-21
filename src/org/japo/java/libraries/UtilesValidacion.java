@@ -20,13 +20,18 @@ package org.japo.java.libraries;
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.japo.java.entities.Item;
 
 /**
  *
  * @author CicloM
  */
 public class UtilesValidacion {
+
+  //Se valida como un nombre, ahora sí que va.
+  public static final String ER_NOMBRE = "^[a-zA-Z0-9 ]*$";
+  //Precio real con dos decimales.
+  public static final String ER_PRECIO = "[0-9]+([\\.,][0-9]{1,2})?";
+  public static final String ER_IDS = "[+]?[0-9][0-9]*";
 
   public static final boolean validar(String dato, String er) {
     boolean isOk = false;
@@ -48,11 +53,41 @@ public class UtilesValidacion {
     return isOk;
   }
 
-  public static final boolean validarPrecio(String precio) {
-    return precio.matches(Item.ER_PRECIO);
+//Booleans del RegExp
+  public static boolean validarPrecio(String precio) {
+    return validar(precio, ER_PRECIO);
+  }
+
+  public static final boolean validarNombre(String nombre) {
+    return validar(nombre, ER_NOMBRE);
   }
   
-  public static final String formatPrecio(double precio){
+  public static final boolean validaId(String id){
+    return validar(id, ER_IDS);
+  }
+
+  //Boolean para la validación en el menú...
+  public static final boolean precioOk(double precio) {
+    boolean isOk;
+    isOk = UtilesValidacion.validarPrecio(Double.toString(precio));
+    if (!isOk) {
+      System.out.printf("%nPrecio introducido incorrecto.%n"
+              + "Recuerda el formato con dos decimales (##.##)%n");
+    }
+    return isOk;
+  }
+
+  //Boolean para la validación en el menú...
+  public static final boolean nombreOk(String nombre) {
+    boolean isOk;
+    isOk = UtilesValidacion.validarNombre(nombre);
+    if (!isOk) {
+      System.out.printf("%nNombre introducido incorrecto.%n%n");
+    }
+    return isOk;
+  }
+
+  public static final String formatPrecio(double precio) {
     DecimalFormat df = new DecimalFormat("#.##");
     return df.format(precio);
   }

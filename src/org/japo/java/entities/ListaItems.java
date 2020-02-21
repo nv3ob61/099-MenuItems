@@ -25,9 +25,9 @@ import java.util.Iterator;
  * @author CicloM
  */
 public class ListaItems {
-
+  
   private ArrayList<Item> lista = new ArrayList<>();
-
+  
   public ListaItems() {
     lista = new ArrayList<>();
   }
@@ -50,13 +50,13 @@ public class ListaItems {
     return del;
   }
 
-    //Método que busca artículo por su nombre (solo el primero)
+  //Método que busca artículo por su nombre (solo el primero)
   public Item buscaItem(String nombre) {
     Item i;
     Item enc = null;
     boolean exit = false;
     Iterator<Item> it = lista.iterator();
-
+    
     while (exit == false && it.hasNext()) {
       i = it.next();
       if (i.getNombre().equals(nombre)) {
@@ -66,16 +66,32 @@ public class ListaItems {
     }
     return enc;
   }
-  
+
+  //Método que busca artículo por su nombre (solo el primero)
+  public Item buscaItemId(String id) {
+    Item i;
+    Item enc = null;
+    boolean exit = false;
+    Iterator<Item> it = lista.iterator();
     
-  public void mostrarItems(){
+    while (exit == false && it.hasNext()) {
+      i = it.next();
+      if (i.getId() == Integer.parseInt(id)) {
+        exit = true;
+        enc = i;
+      }
+    }
+    return enc;
+  }
+  
+  public void mostrarItems() {
     lista.forEach((i) -> {
       System.out.println();
       i.muestraInfoItem();
     });
   }
   
-    public int numItems() {
+  public int numItems() {
     return lista.size();
   }
 }
